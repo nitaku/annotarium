@@ -1,0 +1,6 @@
+Options +FollowSymLinks
+RewriteEngine On
+
+RewriteRule ^docs$ docs.php
+RewriteRule ^docs/$ docs.php
+RewriteRule ^docs/([0-9]+)$ docs.php?id=$1
