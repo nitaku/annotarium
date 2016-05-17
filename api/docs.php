@@ -44,19 +44,41 @@ function read($id) {
   return as_doc(cypher($query));
 }
 
+function update($doc) {
+  $id = $doc->id;
+
+  // id is not a property in our Neo4j db, so it needs to be removed from the doc object
+  unset($doc->id);
+  $neo_doc = as_neo4j_node_literal($doc);
+
+  // update the given TEA document and return it
+  $query = "MATCH (n:TEADoc) WHERE id(n) = $id SET n += $neo_doc RETURN n AS node, id(n) AS id, labels(n) AS labels";
+  return as_doc(cypher($query));
+}
+
+// FIXME method and presence of the id parameter are used to infer which CRUD method is requested
+// FIXME no error handling at all!
 switch($_SERVER['REQUEST_METHOD']) {
   case 'POST':
     if(!isset($_GET['id'])) {
-      echo json_encode(create(json_decode(file_get_contents('php://input'))));
+      $doc = json_decode(file_get_contents('php://input'));
+      echo json_encode(create($doc));
     }
     break;
   case 'GET':
     if(isset($_GET['id'])) {
-      echo json_encode(read($_GET['id']));
+      $id = $_GET['id'];
+      echo json_encode(read($id));
     }
     break;
   case 'PUT':
-    echo 'PUT' . $_GET['id'];
+    if(isset($_GET['id'])) {
+      $id = $_GET['id'];
+      $doc = json_decode(file_get_contents('php://input'));
+      if($id == $doc->id) {
+        echo json_encode(update($doc));
+      }
+    }
     break;
 }
 ?>
