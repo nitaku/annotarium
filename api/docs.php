@@ -6,7 +6,7 @@ include('neo.php');
 function as_doc($data) {
   $objects = as_objects($data);
   $doc = $objects[0]['node'];
-  $doc->id = $objects[0]['id'];
+  $doc->id = strval($objects[0]['id']);
 
   return $doc;
 }
