@@ -13,8 +13,8 @@ function as_doc($data) {
 
 function as_neo4j_node_literal($doc) {
   $label = $doc->label;
-  $code = $doc->code;
-  $text = $doc->text;
+  $code = preg_replace('/\n/', '\\n', $doc->code); # escape newlines
+  $text = preg_replace('/\n/', '\\n', $doc->text); # escape newlines
   return "{label: '$label', code: '$code', text: '$text'}";
 }
 
