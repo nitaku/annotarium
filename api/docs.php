@@ -12,21 +12,10 @@ function as_doc($data) {
 }
 
 function as_neo4j_node_literal($doc) {
-  $neo_doc = '{';
-  foreach($doc as $key => $value) {
-    $neo_doc .= $key . ':';
-    if(is_string($value)) {
-      $neo_doc .= "'$value'";
-    }
-    else {
-      $neo_doc .= $value;
-    }
-    $neo_doc .= ',';
-  }
-  $neo_doc = rtrim($neo_doc, ','); // remove trailing comma
-  $neo_doc .= '}';
-
-  return $neo_doc;
+  $label = $doc->label;
+  $code = $doc->code;
+  $text = $doc->text;
+  return "{label: '$label', code: '$code', text: '$text'}";
 }
 
 
@@ -46,9 +35,6 @@ function read($id) {
 
 function update($doc) {
   $id = $doc->id;
-
-  // id is not a property in our Neo4j db, so it needs to be removed from the doc object
-  unset($doc->id);
   $neo_doc = as_neo4j_node_literal($doc);
 
   // update the given TEA document and return it
