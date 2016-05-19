@@ -5,10 +5,15 @@ include('neo.php');
 
 function as_doc($data) {
   $objects = as_objects($data);
-  $doc = $objects[0]['node'];
-  $doc->id = strval($objects[0]['id']);
 
-  return $doc;
+  if(count($objects) > 0) {
+    $doc = $objects[0]['node'];
+    $doc->id = strval($objects[0]['id']);
+    return $doc;
+  }
+  else {
+    return null;
+  }
 }
 
 function as_neo4j_node_literal($doc) {
@@ -54,7 +59,16 @@ switch($_SERVER['REQUEST_METHOD']) {
   case 'GET':
     if(isset($_GET['id'])) {
       $id = $_GET['id'];
-      echo json_encode(read($id));
+      $retrieved_doc = read($id);
+      if(is_null($retrieved_doc)) {
+        http_response_code(404);
+      }
+      else {
+        echo json_encode($retrieved_doc);
+      }
+    }
+    else {
+      http_response_code(400);
     }
     break;
   case 'PUT':
@@ -62,8 +76,20 @@ switch($_SERVER['REQUEST_METHOD']) {
       $id = $_GET['id'];
       $doc = json_decode(file_get_contents('php://input'));
       if($id == $doc->id) {
-        echo json_encode(update($doc));
+        $retrieved_doc = update($doc);
+        if(is_null($retrieved_doc)) {
+          http_response_code(404);
+        }
+        else {
+          echo json_encode($retrieved_doc);
+        }
       }
+      else {
+        http_response_code(400);
+      }
+    }
+    else {
+      http_response_code(400);
     }
     break;
 }
