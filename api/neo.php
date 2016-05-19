@@ -1,7 +1,8 @@
 <?php
 
-function cypher($statement) {
-  $payload = "{\"statements\":[{\"statement\":\"$statement\",\"parameters\":{}}]}";
+function cypher($statement, $parameters) {
+  $parameters_string = json_encode($parameters);
+  $payload = "{\"statements\":[{\"statement\":\"$statement\",\"parameters\":$parameters_string}]}";
 
   $curl = curl_init('http://localhost:7474/db/data/transaction/commit');
   curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "POST");

@@ -16,35 +16,38 @@ function as_doc($data) {
   }
 }
 
-function as_neo4j_node_literal($doc) {
-  $label = $doc->label;
-  $code = preg_replace('/\n/', '\\n', $doc->code); # escape newlines
-  $text = preg_replace('/\n/', '\\n', $doc->text); # escape newlines
-  return "{label: '$label', code: '$code', text: '$text'}";
-}
-
-
 function create($doc) {
-  $neo_doc = as_neo4j_node_literal($doc);
-
   // store a new TEA document and return it with its id attached
-  $query = "CREATE (n:TEADoc $neo_doc) RETURN n AS node, id(n) AS id, labels(n) AS labels";
-  return as_doc(cypher($query));
+  $query = "CREATE (n:TEADoc {label: {label}, code: {code}, text: {text}}) RETURN n AS node, id(n) AS id, labels(n) AS labels";
+  $params = array(
+    'label' => $doc->label,
+    'code' => $doc->code,
+    'text' => $doc->text
+  );
+  return as_doc(cypher($query, $params));
 }
 
 function read($id) {
   // return the TEA document having the given id
-  $query = "MATCH (n:TEADoc) WHERE id(n) = $id RETURN n AS node, id(n) AS id, labels(n) AS labels";
-  return as_doc(cypher($query));
+  $query = "MATCH (n:TEADoc) WHERE id(n) = {id} RETURN n AS node, id(n) AS id, labels(n) AS labels";
+  $params = array(
+    'id' => intval($id)
+  );
+  return as_doc(cypher($query, $params));
 }
 
 function update($doc) {
   $id = $doc->id;
-  $neo_doc = as_neo4j_node_literal($doc);
 
   // update the given TEA document and return it
-  $query = "MATCH (n:TEADoc) WHERE id(n) = $id SET n += $neo_doc RETURN n AS node, id(n) AS id, labels(n) AS labels";
-  return as_doc(cypher($query));
+  $query = "MATCH (n:TEADoc) WHERE id(n) = {id} SET n += {label: {label}, code: {code}, text: {text}} RETURN n AS node, id(n) AS id, labels(n) AS labels";
+  $params = array(
+    'id' => intval($id),
+    'label' => $doc->label,
+    'code' => $doc->code,
+    'text' => $doc->text
+  );
+  return as_doc(cypher($query, $params));
 }
 
 // FIXME method and presence of the id parameter are used to infer which CRUD method is requested
