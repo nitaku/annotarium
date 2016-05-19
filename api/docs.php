@@ -33,7 +33,16 @@ function read($id) {
   $params = array(
     'id' => intval($id)
   );
-  return as_doc(cypher($query, $params));
+  $doc = as_doc(cypher($query, $params));
+
+  // retrieve images, if any
+  $query = "MATCH (n:TEADoc)-[c:CONTAINS]->(i:Content:Image) WHERE id(n) = {id} RETURN id(i) AS id, i.tiled AS tiled ORDER BY c.order";
+  $params = array(
+    'id' => intval($id)
+  );
+  $doc->images = as_objects(cypher($query, $params));
+
+  return $doc;
 }
 
 function update($doc) {
