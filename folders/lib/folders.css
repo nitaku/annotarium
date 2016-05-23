@@ -1,0 +1,102 @@
+.folders {
+  font-family: sans-serif;
+  font-size: 14px;
+  color: #333;
+  background: #DDD;
+}
+
+.folders a {
+  color: inherit;
+  text-decoration: inherit;
+}
+.folders a:hover {
+  color: inherit;
+  text-decoration: inherit;
+}
+
+.folders .cwd {
+  padding: 4px;
+}
+.folders .bar {
+  padding: 6px;
+  box-shadow: 0px 0px 6px #777;
+  background: #EEE;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+.folders .bar > *:not(:last-child) {
+  margin-right: 4px;
+}
+.folders .breadcrumb {
+  flex-grow: 1;
+}
+.folders .path_item {
+  display: inline-block;
+  margin-right: 6px;
+  cursor: pointer;
+}
+.folders .path_item:not(:first-child)::before {
+  content: '\f054';
+  margin-right: 6px;
+  font-family: 'FontAwesome';
+  color: #999;
+  font-size: 10px;
+}
+.folders .path_item:hover > span {
+  text-decoration: underline;
+}
+
+.folders .node {
+  margin: 4px;
+  background: white;
+  border: 1px solid #CCC;
+}
+.folders .subfolder {
+  padding: 6px;
+}
+.folders .subfolder:hover {
+  cursor: pointer;
+  background: #FFF4DC;
+}
+
+.folders .cwd .icon {
+  color: #777;
+}
+.folders .subfolder .icon {
+  font-size: 12px;
+}
+
+.folders .file {
+  display: inline-block;
+  width: 142px;
+  height: 132px;
+  text-align: center;
+  vertical-align: text-top;
+  position: relative;
+}
+.folders .file .icon {
+  margin-top: 16px;
+}
+.folders .preview {
+  width: 100%;
+  background-position: 50% 50%;
+  background-size: cover;
+  height: 90px;
+}
+.folders .filename {
+  box-sizing: border-box;
+  padding: 4px;
+  background: #EEE;
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  height: 42px;
+  line-height: 32px;
+}
+.folders .filename > span {
+  padding: 0;
+  display: inline-block;
+  vertical-align: middle;
+  line-height: normal;
+}
