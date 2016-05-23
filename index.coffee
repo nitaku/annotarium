@@ -1,11 +1,36 @@
-get_data = (user_input) ->
-  query = JSON.stringify {"luceneQuery": user_input}
+d3.select '#search_panel input'
+  .on 'keydown', () ->
+    if d3.event.keyCode is 13
+      wikidata_search this.value
 
-  #redraw examples
+d3.select '#search_button'
+  .on 'click', () ->
+    user_input = d3.select('#search_panel input').node().value
 
-  d3.json 'http://wafi.iit.cnr.it:33065/ClaviusWeb-1.0.2/ClaviusSearch/search'
+    wikidata_search user_input    
+
+
+wikidata_search = (user_input) ->
+  # retrieve Wikidata instances and concepts
+  d3.json "api/wikidata.php?text=#{user_input}", (err_1, wd_data) ->
+    query = JSON.stringify(wd_data.map (d) -> {uri: "http://www.wikidata.org/entity/#{d.id}"})
+
+    index = {}
+    wd_data.forEach (d) -> index[d.id] = d
+
+    d3.json "http://wafi.iit.cnr.it:33065/ClaviusWeb-1.0.3/ClaviusSearch/count"
+      .post query, (err_2, cs_data) ->
+
+        redraw_boxes((cs_data.filter (d) -> d.count > 0).map (d) -> 
+          index[d.uri.split('/').slice(-1)].count = d.count
+          return index[d.uri.split('/').slice(-1)])
+
+clavius_search = (uri) ->
+  query = '{luceneQuery: "concept:\\"' + uri + '\\""}'
+
+  d3.json 'http://wafi.iit.cnr.it:33065/ClaviusWeb-1.0.3/ClaviusSearch/search'
     .post query, (err, data) ->
-      redraw data
+      redraw_docs data
 
 camelify = (str) ->
   camel_str = ""
@@ -21,29 +46,40 @@ camelify = (str) ->
 
   return camel_str
 
-d3.select '#search_panel input'
-  .on 'keydown', () ->
-    if d3.event.keyCode is 13
-      get_data this.value
+redraw_boxes = (data) ->
+  results = d3.select('#boxes').selectAll '.box'
+    .data data, (d) -> d.concepturi
 
-d3.select '#search_button'
-  .on 'click', () ->
-    user_input = d3.select('#search_panel input').node().value
+  enter_results = results.enter().append 'div'
+    .attr
+      class: 'box'
+    .on 'click', (d) -> clavius_search d.concepturi
 
-    get_data user_input    
+  results.order()
 
-redraw = (data) ->
-  d3.select '#search_results'
+  resource = enter_results.append 'div'
+    .attr
+      class: 'resource'
+
+  resource.html (d) -> "<span class='label'>#{d.label}</span> <span>(<a target='_blank' class='link' href='#{d.concepturi}'>#{d.id}</a>)</span><div class='description'>#{d.description}</div>"
+
+  count = enter_results.append 'div'
+    .attr
+      class: 'count'
+    .text (d) -> d.count
+
+  results.exit().remove()
+
+redraw_docs = (data) ->
+  d3.select '#docs'
     .html ""
 
-  container = d3.select '#search_results'
+  container = d3.select '#docs'
 
-  # FIXME replace the aggregation with d3.nest function
   aggregated_data = d3.nest()
     .key (d) -> d.idDoc
     .entries data
 
-  # FIXME use data binding identification function
   results = container.selectAll '.doc'
     .data aggregated_data
 
@@ -51,23 +87,12 @@ redraw = (data) ->
     .attr
       class: 'doc'
 
-  # DOC id and image
-  span = results.append 'div'
-
-  span.append 'div'
-    .attr
-      class: 'id'
-    .text (d) -> "#{d.key}"
-  span.append 'a'
-    .attr
-      href: (d) -> "http://claviusontheweb.it/dualView/?docId=#{d.key.split('_')[1]}"
-      target: '_blank'
-    .append 'img'
-      .attr
-        src: (d) -> "http://claviusontheweb.it/exist/rest/db/clavius/documents/#{d.key.split('_')[1]}/thumbnail.jpg"
-        title: 'Visualize the manuscript'
-
   # Annotations
+  results.append 'div'
+    .attr
+      class: 'label'
+    .text (d) -> d.key
+
   match = results.append 'div'
     .attr
       class: 'annotations'
@@ -79,19 +104,5 @@ redraw = (data) ->
     .attr
       class: 'annotation'
 
-  annotations.append 'div'
-    .attr
-      class: 'match'
+  annotations
     .html (d) -> "...#{d.leftContext.replace(/\n/g, '<br>')} <span class='matched'>#{d.matched.replace(/\n/g, '<br>')}</span> #{d.rightContext.replace(/\n/g, '<br>')}..."
-
-  annotations.append 'div'
-    .attr
-      class: 'concepts'
-    
-    .html (d) -> 
-      if d.concept is '' then '' else '(' + (d.concept.split(' ').map((c,i) -> "#{if i > 0 then ', ' else ''}<span class='concept'>#{camelify(c)}</span>").slice(0,-1).join('')) + ')'
-
-  d3.selectAll '.concept'
-    .on 'click', (d) -> 
-      d3.select('#search_panel input').node().value = "concept:#{this.textContent}"
-      get_data "concept:#{this.textContent}"
