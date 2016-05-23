@@ -1,38 +1,29 @@
 folders
   api_location: 'api/'
   root_id: 819
-  # types:
-  #   Link:
-  #     new: (create) ->
-  #       href = prompt("Insert a URI to create a new link:")
-  #       if href?
-  #         create
-  #           labels: ['Link']
-  #           node:
-  #             href: href
-  #     icon: (d) -> 'external-link'
-  #     tooltip: (d) -> "Link to #{d.node.href}\nNode #{d.id}"
-  #     label: (d) -> d.node.href
-  #     href: (d) -> d.node.href
-  #   Gist:
-  #     thumbnail: (d) -> "//wafi.iit.cnr.it/webvis/lab/workspace/#{d.node.id}/thumbnail.png"
-  #     tooltip: (d) -> "Gist #{d.node.id}\nNode #{d.id}"
-  #     label: (d) -> d.node.description
-  #     href: (d) -> "//wafi.iit.cnr.it/webvis/lab/preview.php?gist_id=#{d.node.id}"
-  #   Software:
-  #     thumbnail: (d) -> "//wafi.iit.cnr.it/webvis/lab/images/thumbnails/#{d.node.id}.png"
-  #     tooltip: (d) -> "Software #{d.node.id}\nNode #{d.id}"
-  #     label: (d) -> d.node.title
-  #     href: (d) -> d.node.href
-  #   Publication:
-  #     icon: (d) -> 'book'
-  #     tooltip: (d) -> "Publication #{d.node.id}\nNode #{d.id}"
-  #     label: (d) -> d.node.title
-  #     href: (d) -> "//wafi.iit.cnr.it/webvis/lab/publications/#{d.node.id}.pdf"
-  #   User:
-  #     get_remote: (d, cb) ->
-  #       d3.json "//api.github.com/users/#{d.node.name}", cb
-  #     thumbnail: (d) -> d.remote.avatar_url
-  #     tooltip: (d) -> "Github User ID: #{d.node.name}\nNode #{d.id}"
-  #     label: (d) -> d.node.name
-  #     href: (d) -> "//github.com/#{d.node.name}"
+  types:
+    TEADoc:
+      new: (create) ->
+        label = prompt("Insert a label for the new TEA document:")
+        if label?
+          # create a new entry in ILC's index
+          o = {
+            name: label,
+            code: '',
+            idDoc: label
+          }
+          d3.json 'http://wafi.iit.cnr.it:33065/ClaviusWeb-1.0.3/ClaviusGraph/create'
+            .post JSON.stringify(o), (error, d) ->
+              if d? and d.id?
+                create
+                  labels: ['TEADoc']
+                  node:
+                    label: label
+                    code: ''
+                    text: ''
+                    index_id: d.id
+
+      icon: (d) -> 'book'
+      tooltip: (d) -> "#{d.node.label}\nTEA document #{d.id}\nIndexed as #{d.node.index_id}"
+      label: (d) -> d.node.label
+      href: (d) -> "/webvis/dev/tea_nitaku#docs/#{d.id}"
