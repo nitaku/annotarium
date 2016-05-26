@@ -7,7 +7,7 @@ d3.select '#search_button'
   .on 'click', () ->
     user_input = d3.select('#search_panel input').node().value
 
-    wikidata_search user_input    
+    wikidata_search user_input
 
 
 wikidata_search = (user_input) ->
@@ -21,7 +21,7 @@ wikidata_search = (user_input) ->
     d3.json "http://wafi.iit.cnr.it:33065/ClaviusWeb-1.0.3/ClaviusSearch/count"
       .post query, (err_2, cs_data) ->
 
-        redraw_boxes((cs_data.filter (d) -> d.count > 0).map (d) -> 
+        redraw_boxes((cs_data.filter (d) -> d.count > 0).map (d) ->
           index[d.uri.split('/').slice(-1)].count = d.count
           return index[d.uri.split('/').slice(-1)])
 
@@ -29,8 +29,21 @@ clavius_search = (uri) ->
   query = '{luceneQuery: "concept:\\"' + uri + '\\""}'
 
   d3.json 'http://wafi.iit.cnr.it:33065/ClaviusWeb-1.0.3/ClaviusSearch/search'
-    .post query, (err, data) ->
-      redraw_docs data
+    .post query, (err, results) ->
+      result_docs = d3.nest()
+        .key (d) -> d.idNeo4j
+        .entries results
+
+      result_docs_index = {}
+      result_docs.forEach (d) ->
+        result_docs_index[parseInt(d.key)] = d
+
+      # augment each result doc with the corresponding TEA document
+      d3.json "api/get_docs_by_index_ids.php?index_ids=[#{result_docs.map((d) -> d.key).join(',')}]", (docs) ->
+        docs.forEach (d) ->
+          result_docs_index[d.node.index_id].doc = d
+
+        redraw_docs result_docs
 
 camelify = (str) ->
   camel_str = ""
@@ -76,12 +89,8 @@ redraw_docs = (data) ->
 
   container = d3.select '#docs'
 
-  aggregated_data = d3.nest()
-    .key (d) -> d.idDoc
-    .entries data
-
   results = container.selectAll '.doc'
-    .data aggregated_data
+    .data data
 
   results.enter().append 'div'
     .attr
@@ -91,7 +100,7 @@ redraw_docs = (data) ->
   results.append 'div'
     .attr
       class: 'label'
-    .text (d) -> d.key
+    .text (d) -> d.doc.node.label
 
   match = results.append 'div'
     .attr

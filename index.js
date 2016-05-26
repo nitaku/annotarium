@@ -41,8 +41,23 @@
   clavius_search = function(uri) {
     var query;
     query = '{luceneQuery: "concept:\\"' + uri + '\\""}';
-    return d3.json('http://wafi.iit.cnr.it:33065/ClaviusWeb-1.0.3/ClaviusSearch/search').post(query, function(err, data) {
-      return redraw_docs(data);
+    return d3.json('http://wafi.iit.cnr.it:33065/ClaviusWeb-1.0.3/ClaviusSearch/search').post(query, function(err, results) {
+      var result_docs, result_docs_index;
+      result_docs = d3.nest().key(function(d) {
+        return d.idNeo4j;
+      }).entries(results);
+      result_docs_index = {};
+      result_docs.forEach(function(d) {
+        return result_docs_index[parseInt(d.key)] = d;
+      });
+      return d3.json("api/get_docs_by_index_ids.php?index_ids=[" + (result_docs.map(function(d) {
+        return d.key;
+      }).join(',')) + "]", function(docs) {
+        docs.forEach(function(d) {
+          return result_docs_index[d.node.index_id].doc = d;
+        });
+        return redraw_docs(result_docs);
+      });
     });
   };
 
@@ -89,20 +104,17 @@
   };
 
   redraw_docs = function(data) {
-    var aggregated_data, annotations, container, match, results;
+    var annotations, container, match, results;
     d3.select('#docs').html("");
     container = d3.select('#docs');
-    aggregated_data = d3.nest().key(function(d) {
-      return d.idDoc;
-    }).entries(data);
-    results = container.selectAll('.doc').data(aggregated_data);
+    results = container.selectAll('.doc').data(data);
     results.enter().append('div').attr({
       "class": 'doc'
     });
     results.append('div').attr({
       "class": 'label'
     }).text(function(d) {
-      return d.key;
+      return d.doc.node.label;
     });
     match = results.append('div').attr({
       "class": 'annotations'
