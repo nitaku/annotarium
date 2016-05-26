@@ -107,6 +107,11 @@
     var annotations, container, match, results;
     d3.select('#docs').html("");
     container = d3.select('#docs');
+    container.append('div').attr({
+      id: 'results_count'
+    }).text(function(d) {
+      return data.length + " " + (data.length === 1 ? 'Document' : 'Documents') + " found.";
+    });
     results = container.selectAll('.doc').data(data);
     results.enter().append('div').attr({
       "class": 'doc'

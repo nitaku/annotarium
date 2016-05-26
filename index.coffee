@@ -89,6 +89,11 @@ redraw_docs = (data) ->
 
   container = d3.select '#docs'
 
+  container.append 'div'
+    .attr
+      id: 'results_count'
+    .text (d) -> "#{data.length} #{if data.length is 1 then 'Document' else 'Documents'} found."
+
   results = container.selectAll '.doc'
     .data data
 
