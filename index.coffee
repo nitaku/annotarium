@@ -1,11 +1,11 @@
-d3.select '#search_panel input'
+d3.select '#search input'
   .on 'keydown', () ->
     if d3.event.keyCode is 13
       wikidata_search this.value
 
 d3.select '#search_button'
   .on 'click', () ->
-    user_input = d3.select('#search_panel input').node().value
+    user_input = d3.select('#search input').node().value
 
     wikidata_search user_input
 
@@ -21,7 +21,7 @@ wikidata_search = (user_input) ->
     d3.json "http://wafi.iit.cnr.it:33065/ClaviusWeb-1.0.3/ClaviusSearch/count"
       .post query, (err_2, cs_data) ->
 
-        redraw_boxes((cs_data.filter (d) -> d.count > 0).map (d) ->
+        redraw_concepts((cs_data.filter (d) -> d.count > 0).map (d) ->
           index[d.uri.split('/').slice(-1)].count = d.count
           return index[d.uri.split('/').slice(-1)])
 
@@ -59,39 +59,64 @@ camelify = (str) ->
 
   return camel_str
 
-redraw_boxes = (data) ->
-  results = d3.select('#boxes').selectAll '.box'
+redraw_concepts = (data) ->
+  d3.select('#concepts .counter').remove()
+  d3.select('#concepts').append 'div'
+    .attr
+      class: 'counter'
+    .text (d) -> "#{data.length} #{if data.length is 1 then 'Concept' else 'Concepts'} found."
+
+  results = d3.select('#concepts').selectAll '.concept'
     .data data, (d) -> d.concepturi
 
   enter_results = results.enter().append 'div'
     .attr
-      class: 'box'
+      class: 'concept'
     .on 'click', (d) -> clavius_search d.concepturi
 
   results.order()
+
+  enter_results.append 'div'
+    .attr
+      class: 'icon'
+    .append 'i'
+      .attr
+        class: 'fa fa-circle-o'
+        'aria-hidden': 'true'
 
   resource = enter_results.append 'div'
     .attr
       class: 'resource'
 
-  resource.html (d) -> "<span class='label'>#{d.label}</span> <span>(<a target='_blank' class='link' href='#{d.concepturi}'>#{d.id}</a>)</span><div class='description'>#{d.description}</div>"
-
-  count = enter_results.append 'div'
+  resource.append 'span'
+    .attr
+      class: 'label'
+    .text (d) -> d.label
+  resource.append 'span'
+    .html (d) -> " (<a target='_blank' class='link' href='#{d.concepturi}'>wd:#{d.id}</a>)"
+  resource.append 'div'
+    .attr
+      class: 'description'
+    .text (d) -> d.description
+  resource.append 'div'
     .attr
       class: 'count'
-    .text (d) -> d.count
+    .text (d) -> "#{d.count} #{if d.count is 1 then 'Occurrence' else 'Occurrences'} found."
+
+  ###count = enter_results.append 'div'
+    .attr
+      class: 'count'
+    .text (d) -> d.count###
 
   results.exit().remove()
 
 redraw_docs = (data) ->
-  d3.select '#docs'
-    .html ""
-
   container = d3.select '#docs'
+  container.html ""
 
   container.append 'div'
     .attr
-      id: 'results_count'
+      class: 'counter'
     .text (d) -> "#{data.length} #{if data.length is 1 then 'Document' else 'Documents'} found."
 
   results = container.selectAll '.doc'
@@ -104,6 +129,16 @@ redraw_docs = (data) ->
   # Annotations
   results.append 'div'
     .attr
+      class: 'icon'
+    .append 'i'
+      .attr
+        class: 'fa fa-file-o'
+        'aria-hidden': 'true'
+
+  right_container = results.append 'div'
+  
+  right_container.append 'div'
+    .attr
       class: 'label'
     .append 'a'
       .attr
@@ -111,7 +146,7 @@ redraw_docs = (data) ->
           "http://wafi.iit.cnr.it/webvis/dev/tea_nitaku/#docs/#{d.doc.id}"
       .text (d) -> d.doc.node.label
 
-  match = results.append 'div'
+  match = right_container.append 'div'
     .attr
       class: 'annotations'
 

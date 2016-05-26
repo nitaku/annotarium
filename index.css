@@ -12,167 +12,43 @@ body {
   color: #333;
 }
 
+/* MAIN CONTAINERs */
 #header {
-  position: relative;
-  height: 70px;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-end;
+  height: 80px;
   width: 100%;
   border-bottom: 1px solid #eee;
+}
+#header > * {
+  margin-bottom: 10px;
 }
 #core {
   display: flex;
   flex-direction: column;
   flex-grow: 1;
+  padding: 20px;
 }
 #results {
   display: flex;
   flex-direction: row;
   flex-grow: 1;
 }
-
-/* edit button*/
-#edit_button {
-  position: absolute;
-  right: 40px;
-  bottom: 5px;
-  font-size: 15px;
+.spacer {
+  flex-grow: 1;
 }
-#edit_button a {
-  text-decoration: none;
-  color: #333;
-}
-#edit_button a:hover {
-  text-decoration: underline;
-}
-
-/* search panel */
-#search_panel {
-  text-align: center;
-  padding: 100px 0px 100px 0px;
-}
-#search {
-  position: relative;
-  width: 488px;
-  margin: auto;
-}
-#search_panel input {
-  width: 400px;
-  height: 40px;
-  font-size: 18px;
-  outline: none;
-}
-#search_button {
-  width: 45px;
-  height: 40px;
-  position: absolute;
-  top: 0px;
-  right: 0px;
-
-  background: #555;
-  color: #fff;
-  font-size: 20px;
-  border: 0;
-  border-radius: 0 2.5pt 2.5pt 0;
-  cursor: pointer;
-}
-#search_button:hover {
-  background: #888;
-}
-
-/* boxes */
-#boxes {
-  width: 260px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  border: 1px solid #e2e2e2;
-  padding: 10px;
-  margin: 0px 10px 10px 0px;
-}
-.box {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  border-radius: 2.5pt;
-  width: 250px;
-  padding: 5px;
-  margin-bottom: 5px;
-  background: #f2f2f2;
-  cursor: pointer;
-}
-.box .resource {
-  width: 90%;
-}
-.box .label {
-  font-size: 15px;
-}
-.box .count {
-  width: 10%;
-  text-align: center;
-}
-.box:hover {
-  background: rgb(254,242,201);
-}
-.box .link {
-  color: steelblue;
-}
-.box .link:hover {
-  text-decoration: none;
-}
-.box .description {
-  color: #999;
-  font-style: italic;
-  font-size: 13px;
-}
-
-/* docs */
-#docs {
-  flex-grow: 3;
-  width: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-#results_count {
-  width: 70%;
+.counter {
   margin-bottom: 20px;
   color: gray;
 }
-.doc {
-  width: 70%;
-  border-bottom: 1px solid #eee;
-  margin-bottom: 20px;
-  padding-bottom: 10px;
-}
-.doc .label {
-  margin-bottom: 5px;
-}
-.doc .label a {
-  font-size: 14px;
-  font-weight: bold;
-  margin-bottom: 5px;
-  color: #333;
-}
-.doc .label a:hover {
-  text-decoration: none;
-}
-.doc .annotation {
-  font-size: 13px;
-  border-left: 2px solid #e2e2e2;
-  padding-left: 10px;
-  margin-bottom: 10px;
-}
-.doc .matched {
-  font-weight: bold;
-  background: rgb(254,242,201);
-  padding: 2px;
-}
 
-/* Annotarium LOGO */
+/* Logo */
 #logo {
   font-size: 32px;
   font-family: serif;
   letter-spacing: 2px;
-  margin: 10px;
+  margin-left: 10px;
 }
 #logo span:first-child {
   font-size: 45px;
@@ -181,4 +57,147 @@ body {
   background: rgb(254,242,201);
   color: darkgoldenrod;
   padding: 2.5px;
+}
+
+/* SEARCH bar */
+#search {
+  position: relative;
+  width: 600px;
+  text-align: center;
+}
+#search input {
+  width: 500px;
+  height: 40px;
+  font-size: 18px;
+  outline: none;
+}
+button#search {
+  width: 45px;
+  height: 40px;
+  background: #555;
+  color: #fff;
+  font-size: 20px;
+  border: 0;
+  border-radius: 0 2.5pt 2.5pt 0;
+  cursor: pointer;
+}
+button#search:hover {
+  background: #888;
+}
+
+/* EDIT button */
+button#edit {
+  width: 50px;
+  height: 40px;
+  font-size: 15px;
+  background: #555;
+  text-align: center;
+  border: 0;
+  border-radius: 2.5pt;
+}
+button#edit a {
+  text-decoration: none;
+  color: #fff;
+  margin-top: 5px;
+}
+button#edit a:hover {
+  background: #888;
+}
+
+/* CONCEPT boxes */
+#concepts {
+  width: 310px;
+  height: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border: 1px solid #e2e2e2;
+  padding: 10px;
+  border-radius: 2.5pt;
+  -webkit-box-shadow: 0px 3px 5px 0px rgba(170,170,170,1);
+  -moz-box-shadow: 0px 3px 5px 0px rgba(170,170,170,1);
+  box-shadow: 0px 3px 5px 0px rgba(170,170,170,1);
+}
+.concept {
+  display: flex;
+  flex-direction: row;
+  border-radius: 2.5pt;
+  width: 300px;
+  margin-bottom: 5px;
+}
+.concept .resource {
+  width: 100%;
+}
+.concept .icon {
+  font-size: x-large;
+  margin-right: 8px;
+}
+.concept .label {
+  font-size: 15px;
+  font-weight: bold;
+  text-decoration: underline;
+  cursor: pointer;
+}
+.concept .label:hover {
+  text-decoration: none;
+}
+.concept .count {
+}
+.concept .link {
+  color: steelblue;
+}
+.concept .link:hover {
+  text-decoration: none;
+}
+.concept .description {
+  color: #999;
+  font-style: italic;
+  font-size: 13px;
+}
+
+/* DOCUMENTs */
+#docs {
+  flex-grow: 3;
+  width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: 13px;
+}
+#docs > * {
+  width: 85%;
+}
+.doc {
+  display: flex;
+  flex-direction: row;
+  border-bottom: 1px solid #eee;
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+}
+.doc .icon {
+  font-size: x-large;
+  margin-right: 8px;
+}
+.doc .label {
+  margin-bottom: 5px;
+}
+.doc .label a {
+  font-size: 15px;
+  font-weight: bold;
+  margin-bottom: 5px;
+  color: #333;
+}
+.doc .label a:hover {
+  text-decoration: none;
+}
+.doc .annotation {
+  border-left: 2px solid #e2e2e2;
+  padding-left: 10px;
+  margin-bottom: 10px;
+  font-family: serif;
+  font-size: 13.5px;
+}
+.doc .matched {
+  background: rgb(254,242,201);
+  padding: 2px;
 }

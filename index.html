@@ -10,21 +10,19 @@
   <body>
     <div id="header">
       <div id="logo"><span>A</span>NNOT<span>ARIUM</span></div>
-      <div id="edit_button"><a href="folders">Edit</a></div>
+      <div id="search">
+        <input type="text" value="">
+        <button id="search" title="Search"><i class="fa fa-search"></i></button>  
+      </div>
+      <div class="spacer"></div>
+      <button id="edit" title="Edit"><a href="folders">Edit</a></button>
     </div>
 
     <div id="core">
-      <div id="search_panel">
-        <div id="search">
-          <input type="text" value="">
-          <button id="search_button" title="Search"><i class="fa fa-search"></i></button>  
-        </div>
-        
-      </div>
-
       <div id="results">
         <div id="docs"></div>
-        <div id="boxes"></div>
+        <div id="concepts"></div>
+        <div class="spacer"></div>
       </div>
     </div>
 
