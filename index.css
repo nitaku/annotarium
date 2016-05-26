@@ -125,9 +125,16 @@ body {
   padding-bottom: 10px;
 }
 .doc .label {
+  margin-bottom: 5px;
+}
+.doc .label a {
   font-size: 14px;
   font-weight: bold;
   margin-bottom: 5px;
+  color: #333;
+}
+.doc .label a:hover {
+  text-decoration: none;
 }
 .doc .annotation {
   font-size: 13px;
