@@ -47,32 +47,46 @@ body {
 /* search panel */
 #search_panel {
   text-align: center;
-  padding: 125px 0px 125px 0px;
+  padding: 100px 0px 100px 0px;
+}
+#search {
+  position: relative;
+  width: 488px;
+  margin: auto;
 }
 #search_panel input {
-  width: 30%;
+  width: 400px;
   height: 40px;
   font-size: 18px;
+  outline: none;
 }
 #search_button {
-  background: #fff;
+  width: 45px;
+  height: 40px;
+  position: absolute;
+  top: 0px;
+  right: 0px;
+
+  background: #555;
+  color: #fff;
   font-size: 20px;
   border: 0;
-  color: #555;
+  border-radius: 0 2.5pt 2.5pt 0;
   cursor: pointer;
 }
 #search_button:hover {
-  color: #888;
+  background: #888;
 }
 
 /* boxes */
 #boxes {
-  flex-grow: 1;
-  width: 0;
+  width: 260px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  border-right: 1px solid #e2e2e2;
+  border: 1px solid #e2e2e2;
+  padding: 10px;
+  margin: 0px 10px 10px 0px;
 }
 .box {
   display: flex;
