@@ -115,7 +115,6 @@
       "class": 'label'
     }).append('a').attr({
       href: function(d) {
-        console.log(d);
         return "http://wafi.iit.cnr.it/webvis/dev/tea_nitaku/#docs/" + d.doc.id;
       }
     }).text(function(d) {
