@@ -103,7 +103,6 @@ redraw_docs = (data) ->
     .append 'a'
       .attr
         href: (d) ->
-          console.log d
           "http://wafi.iit.cnr.it/webvis/dev/tea_nitaku/#docs/#{d.doc.id}"
       .text (d) -> d.doc.node.label
 
