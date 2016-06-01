@@ -1,14 +1,29 @@
+### Search by pressing key
+###
 d3.select '#search input'
   .on 'keydown', () ->
     if d3.event.keyCode is 13
-      wikidata_search this.value
+      d3.select '#concepts'
+        .html '<div class="counter"><i class="fa fa-spinner fa-pulse fa-2x fa-fw"></i></div>'
+      d3.select '#docs'
+        .html '<div class="counter"><i class="fa fa-spinner fa-pulse fa-2x fa-fw"></i></div>'
 
-d3.select '#search_button'
+      wikidata_search this.value
+      clavius_search this.value, false
+
+### Search by button click
+###
+d3.select '#search button'
   .on 'click', () ->
+    d3.select '#concepts'
+      .html '<div class="counter"><i class="fa fa-spinner fa-pulse fa-2x fa-fw"></i></div>'
+    d3.select '#docs'
+      .html '<div class="counter"><i class="fa fa-spinner fa-pulse fa-2x fa-fw"></i></div>'
+
     user_input = d3.select('#search input').node().value
 
     wikidata_search user_input
-
+    clavius_search user_input, false
 
 wikidata_search = (user_input) ->
   # retrieve Wikidata instances and concepts
@@ -25,13 +40,13 @@ wikidata_search = (user_input) ->
           index[d.uri.split('/').slice(-1)].count = d.count
           return index[d.uri.split('/').slice(-1)])
 
-clavius_search = (uri) ->
-  query = '{luceneQuery: "concept:\\"' + uri + '\\""}'
+clavius_search = (input, conceptual) ->
+  query = if conceptual then '{luceneQuery: "concept:\\"' + input + '\\""}' else JSON.stringify {"luceneQuery": input}
 
   d3.json 'http://wafi.iit.cnr.it:33065/ClaviusWeb-1.0.3/ClaviusSearch/search'
     .post query, (err, results) ->
       result_docs = d3.nest()
-        .key (d) -> d.idNeo4j
+        .key (d) -> d.idDoc
         .entries results
 
       result_docs_index = {}
@@ -60,10 +75,10 @@ camelify = (str) ->
   return camel_str
 
 redraw_concepts = (data) ->
-  d3.select('#concepts .counter').remove()
-  d3.select('#concepts').append 'div'
-    .attr
-      class: 'counter'
+  container = d3.select '#concepts'
+  container.html '<div class="counter"></div>'
+
+  d3.select '#concepts .counter'
     .text (d) -> "#{data.length} #{if data.length is 1 then 'Concept' else 'Concepts'} found."
 
   results = d3.select('#concepts').selectAll '.concept'
@@ -72,7 +87,9 @@ redraw_concepts = (data) ->
   enter_results = results.enter().append 'div'
     .attr
       class: 'concept'
-    .on 'click', (d) -> clavius_search d.concepturi
+    .on 'click', (d) ->
+      d3.select('#search input').node().value=''
+      clavius_search d.concepturi, true
 
   results.order()
 
@@ -103,20 +120,13 @@ redraw_concepts = (data) ->
       class: 'count'
     .text (d) -> "#{d.count} #{if d.count is 1 then 'Occurrence' else 'Occurrences'} found."
 
-  ###count = enter_results.append 'div'
-    .attr
-      class: 'count'
-    .text (d) -> d.count###
-
   results.exit().remove()
 
 redraw_docs = (data) ->
   container = d3.select '#docs'
-  container.html ""
+  container.html '<div class="counter"></div>'
 
-  container.append 'div'
-    .attr
-      class: 'counter'
+  container.select '#docs .counter'
     .text (d) -> "#{data.length} #{if data.length is 1 then 'Document' else 'Documents'} found."
 
   results = container.selectAll '.doc'
