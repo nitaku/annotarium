@@ -204,3 +204,13 @@ button#edit a:hover {
   background: rgb(254,242,201);
   padding: 2px;
 }
+
+.doc .annotations .wd_resource {
+  margin-top: 5px
+}
+.doc .annotations .wd_resource a {
+  color: #333;
+}
+.doc .annotations .wd_resource a:hover {
+  text-decoration: none;
+}

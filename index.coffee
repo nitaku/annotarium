@@ -1,4 +1,4 @@
-### Search by pressing key
+### Search by key press
 ###
 d3.select '#search input'
   .on 'keydown', () ->
@@ -59,20 +59,6 @@ clavius_search = (input, conceptual) ->
           result_docs_index[d.node.index_id].doc = d
 
         redraw_docs result_docs
-
-camelify = (str) ->
-  camel_str = ""
-  upper_char_index = []
-
-  for char, index in str
-    if char is ['-']
-      upper_char_index.push index+1
-    else if index in upper_char_index
-      camel_str += char.toUpperCase()
-    else
-      camel_str += char
-
-  return camel_str
 
 redraw_concepts = (data) ->
   container = d3.select '#concepts'
@@ -156,10 +142,11 @@ redraw_docs = (data) ->
           "http://wafi.iit.cnr.it/webvis/dev/tea_nitaku/#docs/#{d.doc.id}"
       .text (d) -> d.doc.node.label
 
+  # Text with annotations
   match = right_container.append 'div'
     .attr
       class: 'annotations'
-
+  
   annotations = match.selectAll '.annotation'
     .data (d) -> d.values
 
@@ -168,4 +155,8 @@ redraw_docs = (data) ->
       class: 'annotation'
 
   annotations
-    .html (d) -> "...#{d.leftContext.replace(/\n/g, '<br>')} <span class='matched'>#{d.matched.replace(/\n/g, '<br>')}</span> #{d.rightContext.replace(/\n/g, '<br>')}..."
+    .html (d) -> 
+      if d.resourceObject is ''
+        "<div>...#{d.leftContext.replace(/\n/g, '<br>')} <span class='matched'>#{d.matched.replace(/\n/g, '<br>')}</span> #{d.rightContext.replace(/\n/g, '<br>')}...</div>"
+      else
+        "<div>...#{d.leftContext.replace(/\n/g, '<br>')} <span class='matched'>#{d.matched.replace(/\n/g, '<br>')}</span> #{d.rightContext.replace(/\n/g, '<br>')}...</div><div class='wd_resource'><i class='fa fa-circle-o'></i> <a href='#{d.resourceObject}' target='_blank'>wd:#{d.resourceObject.split('/').slice(-1)}</a></div>"
