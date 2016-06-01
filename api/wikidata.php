@@ -6,7 +6,7 @@
 
   /*  Making ASYNC call would support even more languages
   */
-  $languages = array('en', 'it');
+  $languages = array('en', 'it', 'zh');
   
   /* A call to the wikidata API is perfomed until the search-continue attribute is present in the API result
   */
